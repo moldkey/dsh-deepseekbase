@@ -27,6 +27,13 @@ jobs:
       - name: Install DSH CLI
         run: npm install -g @deepseek-ai/dsh
 
+      # pnpm refuses to add to a workspace root without this flag; DSH runs
+      # `pnpm add` inside the profile directory, which looks like a workspace root.
+      - name: Configure pnpm for plugin installs
+        run: |
+          pnpm config set --global ignore-workspace-root-check true
+          pnpm config get ignore-workspace-root-check
+
       - name: Show versions
         run: |
           node --version
@@ -34,7 +41,7 @@ jobs:
           dsh --help | head -5
 
       - name: Stage 1 — install the plugin into a fresh profile
-        run: dsh plugin --profile web add .
+        run: dsh plugin --profile web add "file:$PWD"
 
       - name: Stage 2 — list installed plugins
         run: dsh plugin --profile web list
@@ -45,6 +52,7 @@ jobs:
           echo "config lines: $(wc -l < /tmp/config.yml)"
           if ! grep -q "dsh-deepseekbase" /tmp/config.yml; then
             echo "::error::plugin did not appear in the composed profile tree"
+            cat /tmp/config.yml
             exit 1
           fi
 
@@ -63,6 +71,10 @@ jobs:
           fi
           echo '--- boot log ---'
           cat /tmp/boot.log
+          if grep -qi 'did not activate' /tmp/boot.log; then
+            echo "::error::a plugin entry did not activate"
+            exit 1
+          fi
 
       - name: Stage 5 — tools reach the data source
         run: |
