@@ -1,0 +1,88 @@
+name: Test plugin
+
+# Runs the same four-stage check we run on every indexed plugin:
+#   install -> list -> mount -> boot
+# If this workflow fails, the plugin does not work on a clean machine.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  sandbox:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Install pnpm
+        run: npm install -g pnpm@9
+
+      - name: Install DSH CLI
+        run: npm install -g @deepseek-ai/dsh
+
+      - name: Show versions
+        run: |
+          node --version
+          pnpm --version
+          dsh --help | head -5
+
+      - name: Stage 1 — install the plugin into a fresh profile
+        run: dsh plugin --profile web add .
+
+      - name: Stage 2 — list installed plugins
+        run: dsh plugin --profile web list
+
+      - name: Stage 3 — profile tree mounts the plugin
+        run: |
+          dsh --profile web --dump-config > /tmp/config.yml
+          echo "config lines: $(wc -l < /tmp/config.yml)"
+          if ! grep -q "dsh-deepseekbase" /tmp/config.yml; then
+            echo "::error::plugin did not appear in the composed profile tree"
+            exit 1
+          fi
+
+      - name: Stage 4 — boot stays alive
+        run: |
+          dsh --profile web --no-open > /tmp/boot.log 2>&1 &
+          PID=$!
+          sleep 12
+          if kill -0 $PID 2>/dev/null; then
+            echo "boot OK"
+            kill $PID 2>/dev/null || true
+          else
+            echo "::error::profile exited during boot"
+            cat /tmp/boot.log
+            exit 1
+          fi
+          echo '--- boot log ---'
+          cat /tmp/boot.log
+
+      - name: Stage 5 — tools reach the data source
+        run: |
+          node -e '
+          fetch("https://deepseekbase.com/mcp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/list" }),
+          })
+            .then((r) => r.json())
+            .then((d) => {
+              const names = (d.result && d.result.tools || []).map((t) => t.name);
+              console.log("MCP tools:", names.join(", "));
+              if (!names.includes("price_query")) {
+                console.error("MCP endpoint did not return the expected tools");
+                process.exit(1);
+              }
+            })
+            .catch((e) => {
+              console.error("MCP unreachable:", e.message);
+              process.exit(1);
+            });
+          '
