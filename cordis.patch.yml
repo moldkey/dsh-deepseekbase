@@ -3,4 +3,4 @@
 # overrides, disables, and insert lists; `!!js` expressions allowed).
 - insert:
     - id: dsh-deepseekbase
-      name: dsh-deepseekbase
+      name: '@liangjiehappy/dsh-deepseekbase'

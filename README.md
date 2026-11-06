@@ -1,4 +1,4 @@
-# dsh-deepseekbase
+# @liangjiehappy/dsh-deepseekbase
 
 English | [中文](README.zh.md)
 
@@ -72,7 +72,7 @@ Restart Harness. Four tools become available.
 From npm (once published):
 
 ```bash
-dsh plugin --profile web add dsh-deepseekbase
+dsh plugin --profile web add @liangjiehappy/dsh-deepseekbase
 ```
 
 ---

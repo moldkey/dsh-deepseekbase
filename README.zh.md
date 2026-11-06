@@ -1,4 +1,4 @@
-# dsh-deepseekbase
+# @liangjiehappy/dsh-deepseekbase
 
 [English](README.md) | 中文
 
@@ -72,7 +72,7 @@ dsh plugin --profile web add github:moldkey/dsh-deepseekbase
 從 npm 安裝（發布後）：
 
 ```bash
-dsh plugin --profile web add dsh-deepseekbase
+dsh plugin --profile web add @liangjiehappy/dsh-deepseekbase
 ```
 
 ---
