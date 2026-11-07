@@ -1,75 +1,8 @@
-# @liangjiehappy/dsh-deepseekbase
+# dsh-deepseekbase
 
 [English](README.md) | 中文
 
-**把 DeepSeek 的價格、插件、模型參數和三調用量接進 DeepSeek Harness。**
-
-```bash
-dsh plugin --profile web add github:moldkey/dsh-deepseekbase
-```
-
----
-
-## 最重要的一點：我們免費測插件
-
-大部分插件目錄只告訴你「這個插件存在」。
-
-**沒有人告訴你「它在你這個版本上裝得上嗎」。**
-
-所以我們對索引的每個 DSH 插件做真實沙箱安裝測試 —— **免費，永久**：
-
-| 階段 | 做什麼 |
-|---|---|
-| 1 | 在乾淨容器裡安裝（`dsh plugin add`）|
-| 2 | 確認它出現在 `dsh plugin list` |
-| 3 | 確認它掛載進組合後的配置樹 |
-| 4 | 啟動 profile，確認進程存活 |
-
-第 2-4 階段完全無網絡（`--network none`），所以即使插件有惡意行為也無處可去。
-容器跑完即毀。
-
-**目前的結果：頭部 120 個插件裡，13% 在 DSH 0.2.2-rc.1 上根本裝不上。**
-8 個栽在 `engines.dsh` 版本範圍，5 個在 npm 上已經不存在了。
-
-完整結果，隨測試持續更新：
-
-**→ [deepseekbase.com/ecosystem/plugin-tests](https://deepseekbase.com/ecosystem/plugin-tests/)**
-
-不用註冊、不需要 API Key、讀結果不限次數。
-
----
-
-## 這個插件給你什麼
-
-| 工具 | 回答什麼 |
-|---|---|
-| `deepseekbase_price` | DeepSeek 多少錢？哪家服務商最便宜？ |
-| `deepseekbase_plugin` | 哪個插件能做 X？多少人用？風險多大？ |
-| `deepseekbase_specs` | 模型多大？上下文多長？裝得下嗎？ |
-| `deepseekbase_trend` | DeepSeek 到底被用了多少？ |
-
-### 例子
-
-> **你：** 比較一下 DeepSeek V4.1 Flash 各家服務商的價格
->
-> **工具返回：**
-> ```
-> 官方：離峰 輸入 $0.15 / 輸出 $0.60 每百萬 token
-> 最便宜第三方：Particle AI —— 輸入 $0.025 / 輸出 $0.25
-> ```
-> 同一個模型，價差 6 倍。
-
----
-
-## 安裝
-
-```bash
-dsh plugin --profile web add github:moldkey/dsh-deepseekbase
-```
-
-重啟 Harness，四個工具就可用。
-
-從 npm 安裝（發布後）：
+**在 DeepSeek Harness 裡查 DeepSeek 價格、搜索插件、看沙箱測試結果。**
 
 ```bash
 dsh plugin --profile web add @liangjiehappy/dsh-deepseekbase
@@ -77,59 +10,96 @@ dsh plugin --profile web add @liangjiehappy/dsh-deepseekbase
 
 ---
 
-## 權限
+## 裝了之後能做什麼
 
-這個插件：
-
-- 只對 `deepseekbase.com` 發出 **HTTPS 請求**
-- **不**讀寫你的文件
-- **不**讀憑證或環境變量
-- **不**執行 shell 命令
-
-整個實現就是 `lib/index.js` —— 一個文件、零運行時依賴。
-五分鐘可以審完。
-
----
-
-## 數據來源
-
-| 端點 | 用於 |
+| 你說 | 調用的工具 |
 |---|---|
-| `POST https://deepseekbase.com/mcp` | 價格、插件、模型參數 |
-| `GET https://deepseekbase.com/data/openrouter-tokens.json` | token 走勢 |
+| 「DeepSeek 多少錢？」 | `deepseekbase_price` |
+| 「找個記憶類插件」 | `deepseekbase_plugin` |
+| 「V4-Flash 多大？」 | `deepseekbase_specs` |
+| 「DeepSeek 實際用了多少？」 | `deepseekbase_trend` |
+| **「幫我測 dsh-foo 能不能裝」** | **`deepseekbase_test_plugin`** |
+| **「過了嗎？」** | **`deepseekbase_test_result`** |
+| **「我還剩幾次免費測試？」** | **`deepseekbase_quota`** |
 
-全部也可以在 <https://deepseekbase.com> 瀏覽。
+七個工具、單文件、零運行時依賴，只對 `deepseekbase.com` 發出 HTTPS 請求。
 
 ---
 
-## deepseekbase 是什麼
+## 不用離開 DSH 就能測自己的插件
 
-一個 DeepSeek 生態的第三方索引站。不隸屬於 DeepSeek 官方。
+大部分插件目錄只告訴你插件**存在**。沒人告訴你它在**你這個版本的 Harness 上裝不裝得上**。
 
-| | |
+所以我們做真實沙箱安裝 —— 而且插件讓你直接在對話裡提交：
+
+```
+你：测一下 dsh-foo 在 0.2.2-rc.1 上能不能装
+
+DSH: [deepseekbase_test_plugin]
+     已排队。
+     编号: 1793979912-48671
+     今天还剩 2/3 次免费额度
+     通常几分钟内跑完。
+
+你：过了吗？
+
+DSH: [deepseekbase_test_result]
+     plugin: dsh-foo
+     verdict: 已测通过
+     install_ok: True
+     node_modules: 12.4 MB
+```
+
+**免費額度：每 IP 每天 3 次。** 不用註冊、不用 API key。
+更高額度在計劃中但還沒開放 —— 見[定價說明](https://deepseekbase.com/zh/plugin-pricing/#test-service)。
+
+### 四階段測什麼
+
+| 階段 | 網絡 | 檢查 |
+|---|---|---|
+| 1 安裝 | 有網 | `dsh plugin add` 在乾淨 profile |
+| 2 列裝 | **斷網** | `dsh plugin list` 能看到 |
+| 3 掛載 | **斷網** | `--dump-config` 出現在配置樹 |
+| 4 啟動 | **斷網** | profile 啟動 12 秒不死 |
+
+後三步用 `--network none`，插件即使有惡意行為也無處可去。每個容器跑完就銷毀。
+
+---
+
+## 目前的成果
+
+**3,500+ 個插件真的裝上並掛載了**，覆蓋下載量前 2,000 名。
+
+| 判定 | 數量 |
 |---|---|
-| **287 頁** | 價格、服務商、7,164 個衍生模型、8,559 個插件、行業套件 |
-| **21 份開放數據集** | 每個數字都帶來源和驗證日期 |
-| **免費插件測試** | 真實沙箱安裝，結果公開 |
-| **MCP Server** | `https://deepseekbase.com/mcp`，任何 MCP 客戶端可用 |
-| **插件開發指南** | 十章，含我們自己踩的坑 |
+| 通過 | 2,822 |
+| 裝不上 | 654 |
+| 裝了沒註冊 | 35 |
+| 啟動失敗 | 10 |
 
-我們會明確標註統計口徑。來源互相矛盾時，我們說出來，而不是挑好看的那個數字。
+全部可搜、每個插件有獨立頁面：
 
----
+**→ [deepseekbase.com/zh/plugins/](https://deepseekbase.com/zh/plugins/)**
+**→ [deepseekbase.com/zh/ecosystem/plugin-tests/](https://deepseekbase.com/zh/ecosystem/plugin-tests/)**
 
-## 貢獻
-
-發現 bug？[提 issue](https://github.com/moldkey/dsh-deepseekbase/issues)。
-
-你的插件沒通過我們的測試？錯誤信息會告訴你具體原因 —— 拿去修就行。
-我們記錄的是一個事實，不是評價你的代碼質量。
-
-想讓你的插件被測試？免費：
-<https://deepseekbase.com/zh/ecosystem/plugin-tests/>
+**看結果**不用註冊、不用 API key、不限次數。
 
 ---
 
-## 許可
+## 它不做什麼
 
-MIT。匯編的數據在網站上逐條標註來源。
+- 不讀寫文件
+- 不執行 shell
+- 不碰憑證
+- 不上報遙測
+
+整個實現就一個文件 —— 五分鐘能審完。
+
+---
+
+## 數據來源說明
+
+價格來自 DeepSeek 官方 API 文檔。插件數據來自公開的 npm registry 與 GitHub。
+測試判定是我們自己沙箱跑的，不是 DeepSeek 官方輸出。這是第三方索引 —— 引用時請標明。
+
+MIT 許可。源碼：[github.com/moldkey/dsh-deepseekbase](https://github.com/moldkey/dsh-deepseekbase)
