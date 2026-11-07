@@ -1,0 +1,36 @@
+{
+  "name": "@liangjiehappy/dsh-dshio",
+  "version": "1.0.0",
+  "description": "DSHIO 标准知识包：把 DSHIO 标准体系（术语、插件标准、测试方法、测试条件、认证规则）连同开发指南、测试解读与术语表注册成 DeepSeek Harness 技能，内容从 dshio.org 服务端下发，更新无需重装。纯知识包，无工具、无文件读写、无 shell。",
+  "type": "module",
+  "main": "lib/index.js",
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "README.zh.md"
+  ],
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "dshio",
+    "standards",
+    "skills",
+    "glossary"
+  ],
+  "license": "MIT",
+  "homepage": "https://dshio.org",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moldkey/dsh-deepseekbase.git",
+    "directory": "sites/dsh-dshio"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "engines": {
+    "dsh": ">=0.2.0-rc.2"
+  }
+}
