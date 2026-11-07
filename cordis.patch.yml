@@ -1,6 +1,20 @@
-# Your patch layer for this dsh profile, applied after every bundle layer:
-# a top-level YAML array of loader patch entries (id-targeted config
-# overrides, disables, and insert lists; `!!js` expressions allowed).
+# dsh-deepseekbase — 数据工具包
+#
+# 本包提供 8 个工具：
+#   deepseekbase_price        查 DeepSeek 价格
+#   deepseekbase_plugin       搜 8,400 个插件（带沙箱判定与风险等级）
+#   deepseekbase_specs        查模型技术参数
+#   deepseekbase_trend        看 token 调用量走势
+#   deepseekbase_test_plugin  提交插件做四阶段沙箱测试
+#   deepseekbase_test_result  查测试判定
+#   deepseekbase_quota        查剩余免费额度
+#   deepseekbase_check        按 DSHIO/T 10 逐条检查合规
+#
+# DSHIO 标准知识（5 个技能）由本包的依赖 @liangjiehappy/dsh-dshio 提供，
+# 在 lib/index.js 里通过动态 import 委託加载 —— 这样 pnpm 严格模式下
+# 也能正确解析（传递依赖只在包自己的 node_modules 里可见）。
+#
+# 只想查标准不想装工具的人，可以单独装 @liangjiehappy/dsh-dshio。
 - insert:
     - id: dsh-deepseekbase
       name: "@liangjiehappy/dsh-deepseekbase"
