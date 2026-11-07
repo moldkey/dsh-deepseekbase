@@ -1,6 +1,6 @@
 {
   "name": "@liangjiehappy/dsh-dshio",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "DSHIO 标准知识包：把 DSHIO 标准体系（术语、插件标准、测试方法、测试条件、认证规则）连同开发指南、测试解读与术语表注册成 DeepSeek Harness 技能，内容从 dshio.org 服务端下发，更新无需重装。纯知识包，无工具、无文件读写、无 shell。",
   "type": "module",
   "main": "lib/index.js",
