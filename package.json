@@ -1,7 +1,7 @@
 {
   "name": "@liangjiehappy/dsh-deepseekbase",
-  "version": "0.3.2",
-  "description": "DeepSeek prices, plugins with sandbox test results, model specs and token trends inside DeepSeek Harness — powered by deepseekbase.com",
+  "version": "0.4.1",
+  "description": "DSH 插件数据工具包：8 个工具 —— 查 DeepSeek 价格、搜 8,400 个插件（带沙箱判定与风险等级）、查模型参数、看 token 走势、提交插件做四阶段沙箱测试、查判定、查免费额度、按 DSHIO/T 10 标准逐条检查合规。依赖 @liangjiehappy/dsh-dshio 自动带上 DSHIO 标准知识。只对 deepseekbase.com 发出 HTTPS，不读写文件、不读凭证、不执行 shell。",
   "keywords": [
     "deepseek-harness",
     "dsh",
@@ -58,5 +58,8 @@
     "@deepseek-ai/dsh-tools": {
       "optional": true
     }
+  },
+  "dependencies": {
+    "@liangjiehappy/dsh-dshio": "^1.0.0"
   }
 }
