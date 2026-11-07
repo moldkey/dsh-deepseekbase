@@ -1,0 +1,16 @@
+# DSHIO 标准知识包
+#
+# 装本包即获得 5 个技能：
+#   dshio-standards   标准全文（T00 术语 / T10 插件 / T20 测试方法 / T21 测试条件）
+#   dshio-check       符合性检查流程
+#   dsh-plugin-dev    插件开发指南
+#   dshio-testing     测试解读
+#   dshio-glossary    术语表
+#
+# 内容优先从 https://dshio.org/api/dshio/skills.json 拉取，
+# 拉不到用内置副本。我们更新标准时，已装用户下次启动即同步，无需重装。
+#
+# 本包不含任何工具、不写文件、不执行命令。
+- insert:
+    - id: dshio
+      name: "@liangjiehappy/dsh-dshio"
