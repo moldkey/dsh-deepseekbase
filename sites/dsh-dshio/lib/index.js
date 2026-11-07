@@ -52,6 +52,8 @@ function toRegistration(sk, layer, extra) {
     name: sk.name,
     description: sk.description,
     content: sk.content,
+    // SkillSummary 要求顶层 source；register() 缺省用 registry 自带的 runtime provider
+    source: "runtime",
     metadata: Object.assign(
       {
         source: "dshio",
