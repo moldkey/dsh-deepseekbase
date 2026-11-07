@@ -1,75 +1,8 @@
-# @liangjiehappy/dsh-deepseekbase
+# dsh-deepseekbase
 
 English | [中文](README.zh.md)
 
-**DeepSeek prices, plugin discovery and model specs inside DeepSeek Harness.**
-
-```bash
-dsh plugin --profile web add github:moldkey/dsh-deepseekbase
-```
-
----
-
-## The part that matters: we test plugins for free
-
-Most plugin directories tell you a plugin **exists**.
-
-None tell you whether it **installs on your version of Harness**.
-
-So we run real sandbox installs on every DSH plugin we index — **for free, forever**:
-
-| Stage | What we do |
-|---|---|
-| 1 | Install it in a clean container (`dsh plugin add`) |
-| 2 | Confirm it shows up in `dsh plugin list` |
-| 3 | Confirm it mounts in the composed profile tree |
-| 4 | Boot the profile and check it stays alive |
-
-Stages 2–4 run with **`--network none`**, so even a malicious plugin has nowhere to send data.
-Containers are destroyed after each run.
-
-**Results so far: of the top 120 plugins, 13% cannot be installed at all on DSH 0.2.2-rc.1.**
-Eight fail on `engines.dsh` version ranges, five are not on npm anymore.
-
-Full results, updated as we test more:
-
-**→ [deepseekbase.com/ecosystem/plugin-tests](https://deepseekbase.com/ecosystem/plugin-tests/)**
-
-No sign-up. No API key. No rate limit on reading the results.
-
----
-
-## What the plugin gives you
-
-| Tool | What it answers |
-|---|---|
-| `deepseekbase_price` | What does DeepSeek cost, and which provider is cheapest? |
-| `deepseekbase_plugin` | Which plugin does X, how popular, how risky? |
-| `deepseekbase_specs` | How big is the model, what context length, does it fit? |
-| `deepseekbase_trend` | How much is DeepSeek actually used? |
-
-### Example
-
-> **You:** compare DeepSeek V4.1 Flash prices across providers
->
-> **Tool returns:**
-> ```
-> Official: off-peak in $0.15 / out $0.60 per 1M tokens
-> Cheapest third party: Particle AI — in $0.025 / out $0.25
-> ```
-> That is a 6x spread on the same model.
-
----
-
-## Install
-
-```bash
-dsh plugin --profile web add github:moldkey/dsh-deepseekbase
-```
-
-Restart Harness. Four tools become available.
-
-From npm (once published):
+**DeepSeek prices, plugin search and sandbox test results — inside DeepSeek Harness.**
 
 ```bash
 dsh plugin --profile web add @liangjiehappy/dsh-deepseekbase
@@ -77,59 +10,100 @@ dsh plugin --profile web add @liangjiehappy/dsh-deepseekbase
 
 ---
 
-## Permissions
+## What you can do from inside DSH
 
-This plugin:
-
-- makes **outbound HTTPS requests** to `deepseekbase.com` only
-- does **not** read or write your files
-- does **not** read credentials or environment variables
-- does **not** execute shell commands
-
-The whole implementation is `lib/index.js` — one file, zero runtime dependencies.
-You can audit it in five minutes.
-
----
-
-## Data sources
-
-| Endpoint | Used for |
+| Ask | Tool it calls |
 |---|---|
-| `POST https://deepseekbase.com/mcp` | prices, plugins, specs |
-| `GET https://deepseekbase.com/data/openrouter-tokens.json` | token trend |
+| "What does DeepSeek cost?" | `deepseekbase_price` |
+| "Find me a memory plugin" | `deepseekbase_plugin` |
+| "How big is V4-Flash?" | `deepseekbase_specs` |
+| "How much DeepSeek is actually used?" | `deepseekbase_trend` |
+| **"Test whether my plugin dsh-foo installs"** | **`deepseekbase_test_plugin`** |
+| **"Did it pass?"** | **`deepseekbase_test_result`** |
+| **"How many free tests do I have left?"** | **`deepseekbase_quota`** |
 
-Everything is also browsable at <https://deepseekbase.com>.
+Seven tools, one file, zero runtime dependencies. Outbound HTTPS to `deepseekbase.com` only.
 
 ---
 
-## What is deepseekbase
+## Test your own plugin without leaving DSH
 
-A third-party index of the DeepSeek ecosystem. Not affiliated with DeepSeek.
+Most plugin directories tell you a plugin **exists**. None tell you whether it **installs on your
+version of Harness**.
 
-| | |
+So we run real sandbox installs — and the plugin lets you submit yours directly:
+
+```
+You: test whether dsh-foo installs on 0.2.2-rc.1
+
+DSH: [deepseekbase_test_plugin]
+     Queued.
+     id: 1793979912-48671
+     free tier left today: 2/3
+     It usually runs within a few minutes.
+
+You: did it pass?
+
+DSH: [deepseekbase_test_result]
+     plugin: dsh-foo
+     verdict: tested: pass
+     install_ok: True
+     node_modules: 12.4 MB
+```
+
+**Free tier: 3 tests per IP per day.** No sign-up, no API key.
+Higher quotas are planned but not open yet — see
+[pricing](https://deepseekbase.com/plugin-pricing/#test-service).
+
+### What the four stages check
+
+| Stage | Network | Check |
+|---|---|---|
+| 1 install | on | `dsh plugin add` in a clean profile |
+| 2 list | **off** | `dsh plugin list` shows it |
+| 3 mount | **off** | `--dump-config` contains it |
+| 4 boot | **off** | profile boots and stays alive for 12 s |
+
+Stages 2–4 run with `--network none`, so even a malicious plugin has nowhere to send data.
+Containers are destroyed after each run.
+
+---
+
+## Results so far
+
+**3,500+ plugins actually installed and mounted** in our sandbox, across the top 2,000 by downloads.
+
+| Verdict | Count |
 |---|---|
-| **283 pages** | pricing, providers, 7,164 derived models, 8,559 plugins, industry kits |
-| **21 open datasets** | every figure carries its source and verification date |
-| **Free plugin testing** | real sandbox installs, results published |
-| **MCP server** | `https://deepseekbase.com/mcp` for any MCP client |
+| pass | 2,822 |
+| install fails | 654 |
+| mounts but not registered | 35 |
+| boot fails | 10 |
 
-We label measurement bases explicitly. Where sources disagree, we say so instead of picking
-the flattering number.
+Browse all of them, searchable, with per-plugin pages:
 
----
+**→ [deepseekbase.com/plugins](https://deepseekbase.com/plugins/)**
+**→ [deepseekbase.com/ecosystem/plugin-tests](https://deepseekbase.com/ecosystem/plugin-tests/)**
 
-## Contributing
-
-Found a bug? [Open an issue](https://github.com/moldkey/dsh-deepseekbase/issues).
-
-Maintain a plugin that failed our test? The error message tells you exactly why —
-take it and fix it. We are recording a fact, not judging your code.
-
-Want your plugin tested? It is free:
-<https://deepseekbase.com/ecosystem/plugin-tests/>
+No sign-up. No API key. No rate limit on **reading** the results.
 
 ---
 
-## Licence
+## What it does not do
 
-MIT. Compiled data is attributed per entry on the website.
+- No file reads or writes
+- No shell access
+- No credential access
+- No telemetry
+
+The whole implementation is one file — five minutes to audit.
+
+---
+
+## Data attribution
+
+Prices come from DeepSeek's official API docs. Plugin data comes from the public npm registry and
+GitHub. Test verdicts are our own sandbox runs, not official DeepSeek output.
+This is a third-party index — cite it as such.
+
+MIT licensed. Source: [github.com/moldkey/dsh-deepseekbase](https://github.com/moldkey/dsh-deepseekbase)
