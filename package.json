@@ -1,6 +1,6 @@
 {
   "name": "@liangjiehappy/dsh-deepseekbase",
-  "version": "0.1.1",
+  "version": "0.3.2",
   "description": "DeepSeek prices, plugins with sandbox test results, model specs and token trends inside DeepSeek Harness — powered by deepseekbase.com",
   "keywords": [
     "deepseek-harness",
@@ -58,8 +58,5 @@
     "@deepseek-ai/dsh-tools": {
       "optional": true
     }
-  },
-  "publishConfig": {
-    "access": "public"
   }
 }
